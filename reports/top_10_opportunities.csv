@@ -1,0 +1,11 @@
+opportunity_id,opportunity_name,sector,region,investment_score,recommendation,expected_roi_percent,overall_risk_score,strategic_impact_score,sustainability_score
+INV-04958,Qassim Technology Opportunity,Technology,Qassim,100.0,Invest,20.46,36.58,91.48,73.81
+INV-04990,Asir Infrastructure Opportunity,Infrastructure,Asir,100.0,Invest,14.45,35.89,63.08,82.79
+INV-03383,Madinah Healthcare Opportunity,Healthcare,Madinah,100.0,Invest,15.51,53.01,64.24,48.31
+INV-01408,Riyadh Retail Opportunity,Retail,Riyadh,100.0,Invest,10.72,44.31,59.35,75.31
+INV-03584,Asir Real Estate Opportunity,Real Estate,Asir,100.0,Invest,15.97,44.9,74.8,80.67
+INV-03811,Jazan Healthcare Opportunity,Healthcare,Jazan,100.0,Invest,16.75,46.23,79.16,61.77
+INV-01521,Makkah Technology Opportunity,Technology,Makkah,100.0,Invest,19.26,34.81,75.35,63.29
+INV-01426,Riyadh Logistics Opportunity,Logistics,Riyadh,100.0,Invest,20.1,59.45,86.58,67.56
+INV-01438,Asir Retail Opportunity,Retail,Asir,100.0,Invest,13.22,31.15,74.66,58.79
+INV-01220,Riyadh Infrastructure Opportunity,Infrastructure,Riyadh,100.0,Invest,20.88,39.11,74.99,62.89

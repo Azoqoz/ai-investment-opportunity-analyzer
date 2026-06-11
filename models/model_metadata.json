@@ -1,0 +1,14 @@
+{
+    "best_model": "Ridge Regression",
+    "mae": 7.326031623868093,
+    "rmse": 9.338116641880067,
+    "r2": 0.8393689853340282,
+    "target": "investment_score",
+    "task_type": "regression",
+    "score_range": "0-100",
+    "recommendation_thresholds": {
+        "Invest": "score >= 75",
+        "Review": "45 <= score < 75",
+        "Reject": "score < 45"
+    }
+}
