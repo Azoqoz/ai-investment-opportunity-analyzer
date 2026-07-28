@@ -146,48 +146,60 @@ Review:
 
 ## System Architecture
 
-```text
-Synthetic Data Generation
-          |
-          v
-Exploratory Data Analysis
-          |
-          v
-Feature Engineering
-          |
-          v
-Data Preprocessing
-   /               \
-  v                 v
-Numerical Scaling   Categorical Encoding
-  \                 /
-   +-------+-------+
-           |
-           v
-Train/Test Preparation
-           |
-           v
-Regression Model Training
-           |
-           v
-Model Comparison
-           |
-           v
-Ridge Regression Selection
-           |
-           v
-Model and Preprocessor Storage
-           |
-           v
-Streamlit Decision Dashboard
-     /          |          \
-    v           v           v
-Ranking     Prediction   Explainability
-    \           |           /
-     +----------+----------+
-                |
-                v
- Investment Score and Recommendation
+```mermaid
+flowchart TD
+    subgraph A["1. Data Preparation"]
+        A1[Synthetic Data Generation]
+        A2[Exploratory Data Analysis]
+        A3[Feature Engineering]
+
+        A1 --> A2 --> A3
+    end
+
+    subgraph B["2. Machine Learning Pipeline"]
+        B1[Data Preprocessing]
+        B2[Numerical Scaling]
+        B3[Categorical Encoding]
+        B4[Train / Test Split]
+        B5[Regression Model Training]
+        B6[Model Comparison]
+        B7[Ridge Regression Selection]
+
+        B1 --> B2
+        B1 --> B3
+        B2 --> B4
+        B3 --> B4
+        B4 --> B5 --> B6 --> B7
+    end
+
+    subgraph C["3. Model Deployment"]
+        C1[Store Trained Model]
+        C2[Store Preprocessing Pipeline]
+        C3[Streamlit Dashboard]
+
+        C1 --> C3
+        C2 --> C3
+    end
+
+    subgraph D["4. Decision Support"]
+        D1[Opportunity Ranking]
+        D2[Score Prediction]
+        D3[Prediction Explainability]
+        D4[Investment Score]
+        D5[Invest / Review / Reject]
+
+        D1 --> D4
+        D2 --> D4
+        D3 --> D4
+        D4 --> D5
+    end
+
+    A3 --> B1
+    B7 --> C1
+    B7 --> C2
+    C3 --> D1
+    C3 --> D2
+    C3 --> D3
 ```
 
 ---
