@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 
@@ -76,6 +77,29 @@ def get_region_averages(frame: pd.DataFrame) -> pd.DataFrame:
         .mean()
         .sort_values(ascending=False)
         .reset_index()
+    )
+
+
+def get_investment_score_distribution(
+    frame: pd.DataFrame,
+    *,
+    bins: int = 20,
+) -> pd.DataFrame:
+    """Return fixed 0-100 histogram bins suitable for a JSON API."""
+    if bins < 1:
+        raise ValueError("bins must be at least 1")
+
+    counts, edges = np.histogram(
+        frame["investment_score"],
+        bins=bins,
+        range=(0, 100),
+    )
+    return pd.DataFrame(
+        {
+            "bin_start": edges[:-1],
+            "bin_end": edges[1:],
+            "count": counts,
+        }
     )
 
 
