@@ -562,6 +562,8 @@ button, input, select, a { -webkit-tap-highlight-color: transparent; }
 .detail-footnote { border-top: 1px solid var(--border); display: grid; gap: 22px; grid-template-columns: 110px 1fr; padding-top: 10px; }
 .detail-footnote span { color: var(--accent); font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
 .detail-footnote p { color: var(--text-secondary); font-size: 12px; margin: 0; }
+.detail-state-panel { min-height: 220px; }
+.detail-state-copy { color: var(--text-secondary); margin: 24px 0 0; max-width: 680px; }
 
 /* New analysis */
 .analysis-layout { align-items: start; display: grid; gap: 10px; grid-template-columns: minmax(620px, 1fr) minmax(310px, 0.42fr); }

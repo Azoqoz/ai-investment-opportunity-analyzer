@@ -8,6 +8,16 @@ function getApiBaseUrl() {
   return configuredUrl.replace(/\/+$/, "");
 }
 
+export class ApiRequestError extends Error {
+  readonly status: number;
+
+  constructor(status: number) {
+    super(`API request failed with status ${status}`);
+    this.name = "ApiRequestError";
+    this.status = status;
+  }
+}
+
 export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     cache: "no-store",
@@ -16,7 +26,7 @@ export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> 
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
+    throw new ApiRequestError(response.status);
   }
 
   return (await response.json()) as T;

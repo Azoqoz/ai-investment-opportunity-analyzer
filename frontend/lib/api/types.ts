@@ -49,3 +49,35 @@ export interface OpportunityListResponse {
   total: number;
   total_pages: number;
 }
+
+export interface OpportunityIdentity {
+  opportunity_id: string;
+  opportunity_name: string;
+  sector: string;
+  region: string;
+}
+
+export interface OpportunityFinancials {
+  investment_size_million: number;
+  expected_roi_percent: number;
+  payback_period_years: number;
+  profit_margin_percent: number;
+}
+
+export interface StoredSyntheticEvaluation {
+  score_label: string;
+  investment_score: number;
+  recommendation: string;
+  overall_risk_score: number;
+  strategic_impact_score: number;
+  sustainability_score: number;
+  market_attractiveness_score: number;
+  financial_strength_score: number;
+}
+
+export interface OpportunityDetailResponse {
+  identity: OpportunityIdentity;
+  financials: OpportunityFinancials;
+  stored_synthetic_evaluation: StoredSyntheticEvaluation;
+  disclaimer: string;
+}

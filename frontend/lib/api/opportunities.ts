@@ -1,5 +1,8 @@
 import { apiGet } from "@/lib/api/client";
-import type { OpportunityListResponse } from "@/lib/api/types";
+import type {
+  OpportunityDetailResponse,
+  OpportunityListResponse,
+} from "@/lib/api/types";
 
 export interface OpportunityQuery {
   search?: string;
@@ -26,4 +29,11 @@ export function getOpportunities(query: OpportunityQuery, signal?: AbortSignal) 
   if (query.maxScore !== undefined) params.set("max_score", String(query.maxScore));
 
   return apiGet<OpportunityListResponse>(`/opportunities?${params.toString()}`, signal);
+}
+
+export function getOpportunity(opportunityId: string, signal?: AbortSignal) {
+  return apiGet<OpportunityDetailResponse>(
+    `/opportunities/${encodeURIComponent(opportunityId)}`,
+    signal,
+  );
 }
