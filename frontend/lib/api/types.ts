@@ -81,3 +81,35 @@ export interface OpportunityDetailResponse {
   stored_synthetic_evaluation: StoredSyntheticEvaluation;
   disclaimer: string;
 }
+
+export interface PredictionRequest {
+  sector: string;
+  region: string;
+  competition_level: "Low" | "Medium" | "High";
+  investment_size_million: number;
+  expected_roi_percent: number;
+  payback_period_years: number;
+  market_demand_level: "Low" | "Medium" | "High";
+  risk_level: "Low" | "Medium" | "High";
+  strategic_alignment_level: "Low" | "Medium" | "High";
+  sustainability_level: "Low" | "Medium" | "High";
+}
+
+export interface ModelContribution {
+  feature: string;
+  readable_feature: string;
+  value: number;
+  coefficient: number;
+  contribution: number;
+  direction: "positive" | "negative";
+}
+
+export interface PredictionResponse {
+  predicted_investment_score: number;
+  recommendation: "Invest" | "Review" | "Reject";
+  estimated_overall_risk_score: number;
+  positive_contributions: string[];
+  negative_contributions: string[];
+  contributions: ModelContribution[];
+  disclaimer: string;
+}

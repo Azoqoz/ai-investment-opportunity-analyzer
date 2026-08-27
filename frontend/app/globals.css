@@ -580,12 +580,15 @@ button, input, select, a { -webkit-tap-highlight-color: transparent; }
 .form-action-row { align-items: center; display: flex; justify-content: space-between; padding-top: 10px; }
 .form-action-row p { color: var(--text-muted); font-family: var(--mono); font-size: 11px; margin: 0; text-transform: uppercase; }
 .primary-action { background: var(--accent); border: 1px solid var(--accent); border-radius: var(--radius); color: #161719; font-family: var(--mono); font-size: 11.5px; font-weight: 600; height: 36px; padding: 0 16px; text-transform: uppercase; }
+.primary-action:disabled { cursor: wait; opacity: 0.7; }
 .prediction-rail { padding: 13px 14px; position: sticky; top: 70px; }
 .result-placeholder { align-items: end; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr auto; padding: 15px 0; }
 .result-placeholder span { color: var(--text-muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
 .result-placeholder strong { font-family: var(--mono); font-size: 35px; font-variant-numeric: tabular-nums; font-weight: 500; grid-row: 1 / 3; }
 .result-placeholder small { color: var(--text-muted); font-family: var(--mono); font-size: 11px; }
 .result-placeholder small b { color: var(--review); font-weight: 500; text-transform: uppercase; }
+.result-placeholder small .prediction-invest { color: var(--invest); }
+.result-placeholder small .prediction-reject { color: var(--reject); }
 .result-ledger { margin: 0; }
 .result-ledger > div { align-items: center; border-bottom: 1px solid #292d30; display: flex; font-family: var(--mono); font-size: 11px; justify-content: space-between; min-height: 33px; }
 .result-ledger dt { color: var(--text-muted); text-transform: uppercase; }
