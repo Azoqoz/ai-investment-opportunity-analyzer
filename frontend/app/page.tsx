@@ -1,48 +1,181 @@
+"use client";
+
+import { useEffect, useState, type CSSProperties } from "react";
+
+import { useApiStatus } from "@/components/api-status-context";
 import { PageHeader } from "@/components/page-header";
 import { SectionRule } from "@/components/section-rule";
+import { getOverview } from "@/lib/api/overview";
+import type {
+  CategoryAverage,
+  OverviewResponse,
+  RecommendationCount,
+} from "@/lib/api/types";
 
-const summaryItems = [
-  { label: "Opportunities", value: "5,000", note: "Synthetic universe" },
-  { label: "Avg Score", value: "51.67", note: "Investment score" },
-  { label: "Avg Risk", value: "43.36", note: "Composite risk" },
-  { label: "Invest", value: "845", note: "16.9% of universe" },
-];
+type LoadState = "loading" | "ready" | "error";
 
-const sectorRanking = [
-  ["Renewable Energy", "58.62"],
-  ["Healthcare", "53.22"],
-  ["Tourism", "53.04"],
-  ["Technology", "52.07"],
-  ["Infrastructure", "51.84"],
-];
+const numberFormatter = new Intl.NumberFormat("en-US");
+const recommendationOrder = ["Invest", "Review", "Reject"];
+const loadingRankingRows = Array.from({ length: 5 }, () => null);
+const loadingHistogramBins = Array.from({ length: 20 }, () => null);
 
-const regionRanking = [
-  ["Makkah", "52.90"],
-  ["Riyadh", "52.88"],
-  ["Asir", "52.57"],
-  ["Madinah", "51.22"],
-  ["Tabuk", "51.18"],
-];
+function formatScore(value: number) {
+  return value.toFixed(2);
+}
+
+function recommendationClass(recommendation: string) {
+  const normalized = recommendation.toLowerCase();
+  return recommendationOrder.some((item) => item.toLowerCase() === normalized)
+    ? normalized
+    : "review";
+}
+
+function DataPlaceholder({ className = "" }: { className?: string }) {
+  return <span className={`terminal-data-placeholder ${className}`.trim()} aria-hidden="true" />;
+}
+
+function RankingPanel({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: CategoryAverage[] | null;
+}) {
+  const displayedRows = rows?.slice(0, 5) ?? loadingRankingRows;
+
+  return (
+    <section className="terminal-panel ranking-panel">
+      <SectionRule title={title} note="Average investment score">
+        <span className="quiet-meta">TOP 5</span>
+      </SectionRule>
+      <div className="ranking-ledger">
+        {displayedRows.map((row, index) => (
+          <div className="ranking-row" key={row?.category ?? `${title}-${index}`}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{row ? row.category : <DataPlaceholder className="ranking-label-placeholder" />}</strong>
+            <i>{row ? <b style={{ width: `${row.average_investment_score}%` }} /> : null}</i>
+            <code>{row ? formatScore(row.average_investment_score) : "—"}</code>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function OverviewPage() {
+  const [data, setData] = useState<OverviewResponse | null>(null);
+  const [loadState, setLoadState] = useState<LoadState>("loading");
+  const { setApiStatus, setDatasetRows } = useApiStatus();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    setApiStatus("checking");
+    setDatasetRows(null);
+
+    async function loadOverview() {
+      try {
+        const overview = await getOverview(controller.signal);
+        if (!active) return;
+
+        setData(overview);
+        setLoadState("ready");
+        setDatasetRows(overview.total_opportunities);
+        setApiStatus("online");
+      } catch (error) {
+        if (!active || (error instanceof DOMException && error.name === "AbortError")) return;
+
+        setData(null);
+        setLoadState("error");
+        setDatasetRows(null);
+        setApiStatus("offline");
+      }
+    }
+
+    void loadOverview();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [setApiStatus, setDatasetRows]);
+
+  const summaryItems = [
+    {
+      label: "Opportunities",
+      value: data ? numberFormatter.format(data.total_opportunities) : null,
+      note: "Synthetic universe",
+    },
+    {
+      label: "Avg Score",
+      value: data ? formatScore(data.average_investment_score) : null,
+      note: "Investment score",
+    },
+    {
+      label: "Avg Risk",
+      value: data ? formatScore(data.average_overall_risk_score) : null,
+      note: "Composite risk",
+    },
+    {
+      label: "Invest",
+      value: data ? numberFormatter.format(data.invest_opportunities) : null,
+      note: data
+        ? `${((data.invest_opportunities / data.total_opportunities) * 100).toFixed(1)}% of universe`
+        : "Share of universe",
+    },
+  ];
+
+  const recommendationRows: Array<RecommendationCount | null> = data
+    ? data.recommendation_distribution
+    : recommendationOrder.map((recommendation) => ({ recommendation, count: 0 }));
+  const maximumRecommendationCount = Math.max(
+    ...(data?.recommendation_distribution.map((item) => item.count) ?? [1]),
+  );
+  const maximumHistogramCount = Math.max(
+    ...(data?.investment_score_distribution.map((item) => item.count) ?? [1]),
+  );
+
+  const aside = (() => {
+    if (loadState === "error") {
+      return (
+        <div className="as-of-block overview-request-error" role="alert">
+          <span>API unavailable</span>
+          <strong>Unable to load the research universe.</strong>
+        </div>
+      );
+    }
+
+    if (loadState === "loading") {
+      return (
+        <div className="as-of-block" role="status" aria-live="polite">
+          <span>API status</span>
+          <strong>Loading research universe</strong>
+        </div>
+      );
+    }
+
+    return (
+      <div className="as-of-block">
+        <span>Workspace mode</span>
+        <strong>Live research universe</strong>
+      </div>
+    );
+  })();
+
   return (
     <div className="page-stack overview-page">
       <PageHeader
         eyebrow="Universe snapshot · Synthetic baseline"
         title="Investment Universe"
         description="Screening summary across decision outcomes, score bands, sectors, and regions."
-        aside={
-          <div className="as-of-block">
-            <span>Workspace mode</span>
-            <strong>Static research shell</strong>
-          </div>
-        }
+        aside={aside}
       />
 
-      <section className="summary-strip" aria-label="Portfolio summary">
+      <section className="summary-strip" aria-label="Portfolio summary" aria-busy={loadState === "loading"}>
         {summaryItems.map((item) => (
           <div className="summary-item" key={item.label}>
-            <strong>{item.value}</strong>
+            <strong>{item.value ?? <DataPlaceholder className="summary-value-placeholder" />}</strong>
             <span>{item.label}</span>
             <small>{item.note}</small>
           </div>
@@ -53,27 +186,27 @@ export default function OverviewPage() {
         <section className="terminal-panel recommendation-panel">
           <SectionRule title="Decision Distribution" note="Count / share of universe" />
           <div className="recommendation-shell" aria-label="Decision distribution">
-            <div className="mix-row" style={{ "--mix-width": "37.8%" } as React.CSSProperties}>
-              <span className="mix-marker mix-invest" />
-              <span>Invest</span>
-              <span className="mix-track"><i /></span>
-              <strong>845</strong>
-              <small>16.9%</small>
-            </div>
-            <div className="mix-row" style={{ "--mix-width": "100%" } as React.CSSProperties}>
-              <span className="mix-marker mix-review" />
-              <span>Review</span>
-              <span className="mix-track"><i /></span>
-              <strong>2,235</strong>
-              <small>44.7%</small>
-            </div>
-            <div className="mix-row" style={{ "--mix-width": "85.9%" } as React.CSSProperties}>
-              <span className="mix-marker mix-reject" />
-              <span>Reject</span>
-              <span className="mix-track"><i /></span>
-              <strong>1,920</strong>
-              <small>38.4%</small>
-            </div>
+            {recommendationRows.map((row, index) => {
+              const recommendation = row?.recommendation ?? recommendationOrder[index];
+              const count = data && row ? row.count : null;
+              const className = recommendationClass(recommendation);
+              const width = count === null ? 0 : (count / maximumRecommendationCount) * 100;
+              const share = count === null ? null : (count / data!.total_opportunities) * 100;
+
+              return (
+                <div
+                  className="mix-row"
+                  style={{ "--mix-width": `${width}%` } as CSSProperties}
+                  key={recommendation}
+                >
+                  <span className={`mix-marker mix-${className}`} />
+                  <span>{recommendation}</span>
+                  <span className="mix-track">{count === null ? null : <i />}</span>
+                  <strong>{count === null ? "—" : numberFormatter.format(count)}</strong>
+                  <small>{share === null ? "—" : `${share.toFixed(1)}%`}</small>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -81,8 +214,16 @@ export default function OverviewPage() {
           <SectionRule title="Score Distribution" note="Five-point score bands" />
           <div className="distribution-shell" aria-label="Score distribution structure">
             <div className="distribution-field">
-              {[18, 25, 33, 45, 58, 69, 78, 88, 96, 100, 92, 81, 68, 51, 35, 22, 14, 9, 5, 2].map(
-                (height, index) => <span key={index} style={{ height: `${height}%` }} />,
+              {(data?.investment_score_distribution ?? loadingHistogramBins).map((bin, index) =>
+                bin ? (
+                  <span
+                    key={`${bin.bin_start}-${bin.bin_end}`}
+                    style={{ height: `${(bin.count / maximumHistogramCount) * 100}%` }}
+                    title={`${bin.bin_start.toFixed(0)}–${bin.bin_end.toFixed(0)}: ${numberFormatter.format(bin.count)}`}
+                  />
+                ) : (
+                  <span className="terminal-chart-placeholder" key={index} />
+                ),
               )}
             </div>
             <div className="distribution-axis">
@@ -97,26 +238,8 @@ export default function OverviewPage() {
       </div>
 
       <div className="terminal-grid terminal-grid-rankings">
-        {[
-          ["Sector Ranking", "Average investment score", sectorRanking],
-          ["Region Ranking", "Average investment score", regionRanking],
-        ].map(([title, note, rows]) => (
-          <section className="terminal-panel ranking-panel" key={title as string}>
-            <SectionRule title={title as string} note={note as string}>
-              <span className="quiet-meta">TOP 5</span>
-            </SectionRule>
-            <div className="ranking-ledger">
-              {(rows as string[][]).map(([label, value], index) => (
-                <div className="ranking-row" key={label}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{label}</strong>
-                  <i><b style={{ width: `${Number(value)}%` }} /></i>
-                  <code>{value}</code>
-                </div>
-              ))}
-            </div>
-          </section>
-        ))}
+        <RankingPanel title="Sector Ranking" rows={data?.average_score_by_sector ?? null} />
+        <RankingPanel title="Region Ranking" rows={data?.average_score_by_region ?? null} />
       </div>
     </div>
   );

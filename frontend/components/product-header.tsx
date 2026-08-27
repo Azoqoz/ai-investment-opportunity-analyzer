@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useApiStatus } from "@/components/api-status-context";
+
 const navigation = [
   { href: "/", label: "Overview" },
   { href: "/opportunities", label: "Universe" },
@@ -17,6 +19,8 @@ function routeIsActive(pathname: string, href: string) {
 
 export function ProductHeader() {
   const pathname = usePathname();
+  const { apiStatus, datasetRows } = useApiStatus();
+  const rowCount = datasetRows === null ? "—" : datasetRows.toLocaleString("en-US");
 
   return (
     <header className="product-header">
@@ -42,8 +46,10 @@ export function ProductHeader() {
       </nav>
 
       <div className="header-status">
-        <span>Synthetic Universe <i aria-hidden="true" /> 5,000 records</span>
-        <span className="api-state"><i aria-hidden="true" /> API offline</span>
+        <span>Synthetic Universe <i aria-hidden="true" /> {rowCount} records</span>
+        <span className={`api-state api-state-${apiStatus}`} aria-live="polite">
+          <i aria-hidden="true" /> API {apiStatus}
+        </span>
       </div>
     </header>
   );
