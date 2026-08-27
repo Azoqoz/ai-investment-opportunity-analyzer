@@ -28,3 +28,24 @@ export interface OverviewResponse {
   recommendation_options: string[];
   disclaimer: string;
 }
+
+export interface OpportunityListItem {
+  opportunity_id: string;
+  opportunity_name: string;
+  sector: string;
+  region: string;
+  investment_score: number;
+  recommendation: string;
+  expected_roi_percent: number;
+  overall_risk_score: number;
+  strategic_impact_score: number;
+  sustainability_score: number;
+}
+
+export interface OpportunityListResponse {
+  items: OpportunityListItem[];
+  page: number;
+  page_size: number;
+  total: number;
+  total_pages: number;
+}

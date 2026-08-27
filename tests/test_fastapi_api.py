@@ -164,6 +164,114 @@ def test_opportunities_preserve_exact_three_key_ranking(api_client, raw_data):
     assert [item["opportunity_id"] for item in body["items"]] == expected_ids
 
 
+def test_opportunities_search_by_exact_id(api_client):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "INV-00001"},
+    ).json()
+
+    assert body["total"] == 1
+    assert [item["opportunity_id"] for item in body["items"]] == ["INV-00001"]
+
+
+def test_opportunities_search_by_partial_id(api_client):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "INV-000"},
+    ).json()
+
+    assert body["items"]
+    assert all("INV-000" in item["opportunity_id"] for item in body["items"])
+
+
+def test_opportunities_search_by_name(api_client):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "Tabuk Technology"},
+    ).json()
+
+    assert body["items"]
+    assert all(
+        "Tabuk Technology" in item["opportunity_name"]
+        for item in body["items"]
+    )
+
+
+def test_opportunities_search_is_trimmed_and_case_insensitive(api_client):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "  tAbUk tEcHnOlOgY  "},
+    ).json()
+
+    assert body["items"]
+    assert all(
+        "tabuk technology" in item["opportunity_name"].lower()
+        for item in body["items"]
+    )
+
+
+def test_opportunities_search_combines_with_sector_filter(api_client):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "Tabuk", "sector": "Technology", "page_size": 100},
+    ).json()
+
+    assert body["items"]
+    assert all(item["sector"] == "Technology" for item in body["items"])
+    assert all("Tabuk" in item["opportunity_name"] for item in body["items"])
+
+
+def test_opportunities_search_returns_empty_page_for_no_matches(api_client):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "definitely-no-opportunity"},
+    ).json()
+
+    assert body == {
+        "items": [],
+        "page": 1,
+        "page_size": 10,
+        "total": 0,
+        "total_pages": 0,
+    }
+
+
+def test_opportunities_search_is_applied_before_pagination(api_client, raw_data):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": "Technology Opportunity", "page": 2, "page_size": 3},
+    ).json()
+    matching = raw_data[
+        raw_data["opportunity_name"].str.contains(
+            "Technology Opportunity",
+            case=False,
+            regex=False,
+        )
+    ].sort_values(
+        by=[
+            "investment_score",
+            "expected_roi_percent",
+            "overall_risk_score",
+        ],
+        ascending=[False, False, True],
+    )
+
+    assert body["total"] == len(matching)
+    assert [item["opportunity_id"] for item in body["items"]] == (
+        matching.iloc[3:6]["opportunity_id"].tolist()
+    )
+
+
+@pytest.mark.parametrize("search", ["", "   "])
+def test_opportunities_empty_search_does_not_filter(api_client, search):
+    body = api_client.get(
+        "/opportunities",
+        params={"search": search},
+    ).json()
+
+    assert body["total"] == 5000
+
+
 @pytest.mark.parametrize(
     "params",
     [

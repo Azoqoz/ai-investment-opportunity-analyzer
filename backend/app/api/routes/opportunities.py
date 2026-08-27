@@ -35,6 +35,7 @@ LIST_FIELDS = [
 )
 def list_opportunities(
     request: Request,
+    search: str | None = None,
     sector: Sector | None = None,
     region: Region | None = None,
     recommendation: Recommendation | None = None,
@@ -52,6 +53,7 @@ def list_opportunities(
 
     result = query_opportunities(
         request.app.state.opportunities,
+        search=search,
         sector=sector or "All",
         region=region or "All",
         recommendation=recommendation or "All",

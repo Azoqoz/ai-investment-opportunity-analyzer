@@ -106,14 +106,31 @@ def get_investment_score_distribution(
 def filter_opportunities(
     frame: pd.DataFrame,
     *,
+    search: str | None = None,
     sector: str = "All",
     region: str = "All",
     recommendation: str = "All",
     minimum_score: float = 0,
     maximum_score: float = 100,
 ) -> pd.DataFrame:
-    """Apply the current sector, region, recommendation, and score filters."""
+    """Apply text, category, and score filters to stored opportunities."""
     result = frame.copy()
+
+    normalized_search = search.strip() if search is not None else ""
+    if normalized_search:
+        id_matches = result["opportunity_id"].str.contains(
+            normalized_search,
+            case=False,
+            na=False,
+            regex=False,
+        )
+        name_matches = result["opportunity_name"].str.contains(
+            normalized_search,
+            case=False,
+            na=False,
+            regex=False,
+        )
+        result = result[id_matches | name_matches]
 
     if sector != "All":
         result = result[result["sector"] == sector]
@@ -168,6 +185,7 @@ def paginate_opportunities(
 def query_opportunities(
     frame: pd.DataFrame,
     *,
+    search: str | None = None,
     sector: str = "All",
     region: str = "All",
     recommendation: str = "All",
@@ -179,6 +197,7 @@ def query_opportunities(
     """Filter, rank, and paginate opportunities using current semantics."""
     filtered = filter_opportunities(
         frame,
+        search=search,
         sector=sector,
         region=region,
         recommendation=recommendation,

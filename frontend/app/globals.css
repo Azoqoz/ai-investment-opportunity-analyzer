@@ -464,6 +464,7 @@ button, input, select, a { -webkit-tap-highlight-color: transparent; }
 .field select { font-size: 12.5px; }
 .field input::placeholder { color: var(--text-muted); }
 .field input:focus, .field select:focus { border-color: var(--accent); }
+.field input[aria-invalid="true"] { border-color: var(--reject); }
 .score-range-field > div { align-items: center; display: grid; gap: 6px; grid-template-columns: 1fr 8px 1fr; }
 .score-range-field i { background: var(--border-strong); height: 1px; }
 
@@ -500,9 +501,23 @@ button, input, select, a { -webkit-tap-highlight-color: transparent; }
 .numeric-cell { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right !important; }
 .numeric-cell .cell-link { justify-content: flex-end; }
 .score-cell .cell-link { color: var(--text); font-size: 13.5px; font-weight: 600; }
+.opportunity-loading-row td { padding: 0 10px; }
+.opportunity-cell-placeholder { height: 10px; width: 72%; }
+.opportunity-loading-row td:first-child .opportunity-cell-placeholder { height: 22px; width: 82%; }
+.opportunity-table-message {
+  color: var(--text-muted) !important;
+  font-family: var(--mono);
+  height: 160px !important;
+  padding: 0 10px !important;
+  text-align: center;
+}
+.opportunity-table-error { color: var(--reject) !important; }
 .pagination-shell { align-items: center; border-top: 1px solid var(--border); color: var(--text-muted); display: flex; font-family: var(--mono); font-size: 11px; justify-content: space-between; min-height: 45px; }
 .pagination-shell > div { align-items: center; display: flex; gap: 14px; }
 .pagination-shell button { background: transparent; border: 0; color: var(--text-muted); font-size: 11px; padding: 6px 0; }
+.pagination-shell button:not(:disabled) { color: var(--text-secondary); cursor: pointer; }
+.pagination-shell button:not(:disabled):hover { color: var(--accent); }
+.pagination-shell button:disabled { opacity: 0.55; }
 
 /* Opportunity detail */
 .back-link { color: var(--text-muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; width: fit-content; }
