@@ -1,13 +1,14 @@
 # AI Investment Opportunity Analyzer
 
-A machine learning decision-support dashboard for evaluating synthetic investment opportunities, estimating an Investment Score from 0 to 100, and classifying each opportunity as Invest, Review, or Reject.
+A full-stack machine learning decision-support application for evaluating synthetic investment opportunities, estimating an Investment Score from 0 to 100, and classifying each opportunity as Invest, Review, or Reject.
 
-![Python](https://img.shields.io/badge/Language-Python-blue)
-![Streamlit](https://img.shields.io/badge/Framework-Streamlit-red)
+![Python](https://img.shields.io/badge/Backend-Python-blue)
+![Next.js](https://img.shields.io/badge/Frontend-Next.js-black)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-009688)
 ![Machine Learning](https://img.shields.io/badge/ML-Regression-purple)
 ![Model](https://img.shields.io/badge/Selected%20Model-Ridge%20Regression-green)
 ![Data](https://img.shields.io/badge/Dataset-Synthetic-orange)
-![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
+![Status](https://img.shields.io/badge/Status-Deployed-brightgreen)
 
 ---
 
@@ -23,7 +24,16 @@ The predicted score is converted into one of three recommendation categories:
 - **Review**
 - **Reject**
 
-The project covers the complete machine learning lifecycle, including synthetic data generation, exploratory data analysis, feature engineering, preprocessing, model comparison, explainability, prediction, and interactive dashboard development.
+The current application uses a decoupled full-stack architecture:
+
+- **Next.js** for the production frontend
+- **FastAPI** for the backend API
+- **Scikit-learn** for preprocessing and model inference
+- **Ridge Regression** as the selected estimator
+- **Vercel** for frontend deployment
+- **Render** for backend deployment
+
+The project covers the complete machine learning lifecycle, including synthetic data generation, exploratory data analysis, feature engineering, preprocessing, model comparison, explainability, prediction, API development, frontend integration, testing, and cloud deployment.
 
 ---
 
@@ -49,73 +59,94 @@ The project covers the complete machine learning lifecycle, including synthetic 
 - Scale numerical variables with StandardScaler
 - Encode categorical variables with OneHotEncoder
 - Create financial, market, strategic, sustainability, and risk features
-- Rank existing opportunities using configurable filters
-- Inspect individual opportunities and their decision factors
+- Rank opportunities using live search, filters, scoring, and pagination
+- Inspect detailed information for individual opportunities
 - Predict scores for new opportunity profiles
-- Convert simplified executive inputs into model-ready features
-- Explain predictions through feature contributions
-- Display model results and analytics in an interactive Streamlit dashboard
-- Persist the trained model and preprocessing pipeline using Joblib
+- Convert 10 simplified user inputs into the model's complete feature contract
+- Generate local Ridge Regression model contributions
+- Separate positive and negative contribution drivers
+- Expose model and dataset functionality through a FastAPI backend
+- Provide a production Next.js research-workstation interface
+- Handle API online, offline, loading, empty, and validation states
+- Preserve the trained model and preprocessing pipeline using Joblib
+- Validate migration and API behavior with automated tests
+- Deploy the frontend and backend independently using Vercel and Render
 
 ---
 
 ## Live Demo
 
-The Streamlit application is available at:
+### Application
 
-[Open the AI Investment Opportunity Analyzer](https://ai-investment-opportunity-analyzer-gyw4avdgkqfvfhwnxw6yej.streamlit.app/)
+[Open the AI Investment Opportunity Analyzer](https://ai-investment-opportunity-analyzer.vercel.app)
+
+### FastAPI Backend
+
+[Open the API Documentation](https://ai-investment-opportunity-analyzer.onrender.com/docs)
+
+### API Health
+
+[Check API Health](https://ai-investment-opportunity-analyzer.onrender.com/health)
+
+> [!NOTE]
+> The backend currently uses Render's free compute tier. After a period of inactivity, the service may spin down and the first request can take longer while the API starts again.
 
 ---
 
 ## Demo Workflow
 
-The dashboard contains five main sections.
+The production application contains five main areas.
 
 ### 1. Overview
 
-Review high-level information such as:
+Review the complete synthetic investment universe through:
 
 - Total number of opportunities
 - Average Investment Score
-- Average risk level
-- Number of Invest recommendations
+- Average overall risk
+- Number of Invest opportunities
 - Recommendation distribution
 - Investment-score distribution
-- Average scores by sector
-- Average scores by region
+- Sector ranking
+- Region ranking
 
-### 2. Opportunity Ranking
+All displayed values are loaded from the live FastAPI backend.
 
-Filter and rank existing opportunities using:
+### 2. Universe
 
+Explore and rank the 5,000 synthetic opportunities using:
+
+- Opportunity name or ID search
+- Sector filter
+- Region filter
+- Recommendation filter
+- Investment Score range
+- API-managed pagination
+
+The ranking workflow uses consistent backend query logic rather than client-only filtering.
+
+### 3. Opportunity Detail
+
+Open an individual opportunity to inspect information such as:
+
+- Opportunity name and ID
 - Sector
 - Region
-- Recommendation
-- Investment Score range
-- Number of results to display
-
-The opportunities are ranked using Investment Score, expected ROI, and overall risk.
-
-### 3. Analyze Existing Opportunity
-
-Select an existing opportunity and review:
-
 - Investment Score
 - Recommendation
 - Expected ROI
 - Overall risk
-- Sector and region
 - Investment size
 - Payback period
-- Profit margin
-- Financial strength
-- Market attractiveness
 - Strategic impact
 - Sustainability
+- Additional model and decision factors
 
-### 4. Predict New Opportunity
+The page retrieves the selected opportunity directly from FastAPI.
 
-Enter a simplified opportunity profile using:
+### 4. New Analysis
+
+Submit a simplified 10-field opportunity profile using:
 
 - Sector
 - Region
@@ -124,23 +155,36 @@ Enter a simplified opportunity profile using:
 - Expected ROI
 - Payback period
 - Market demand
-- Overall risk
+- Risk level
 - Strategic alignment
-- Sustainability and ESG potential
+- Sustainability
 
-The application converts these inputs into the complete model feature set before generating the score and recommendation.
+The backend converts these inputs into the full model feature contract before applying the saved preprocessing pipeline and Ridge Regression model.
+
+The result includes:
+
+- Investment Score
+- Invest / Review / Reject recommendation
+- Estimated risk
+- Positive model contributions
+- Negative model contributions
+- Contribution magnitude and direction
+
+Model contributions describe arithmetic influence on the predicted score and do not establish causation.
 
 ### 5. Methodology
 
-Review:
+Review the technical contract behind the deployed application, including:
 
-- Machine learning workflow
-- Target variable
-- Selected model
+- Selected estimator
+- Artifact runtime
+- Dataset size
+- Public input contract
+- Raw feature frame
+- Transformed feature frame
 - Recommendation thresholds
-- Model-comparison results
-- Mean Absolute Error visualization
-- Project limitations and disclaimer
+- Interpretation limitations
+- Synthetic-data disclaimer
 
 ---
 
@@ -148,58 +192,65 @@ Review:
 
 ```mermaid
 flowchart TD
-    subgraph A["1. Data Preparation"]
+    subgraph A["1. Data & Model Development"]
         A1[Synthetic Data Generation]
         A2[Exploratory Data Analysis]
         A3[Feature Engineering]
+        A4[Preprocessing]
+        A5[Model Training & Comparison]
+        A6[Ridge Regression Selection]
 
-        A1 --> A2 --> A3
+        A1 --> A2 --> A3 --> A4 --> A5 --> A6
     end
 
-    subgraph B["2. Machine Learning Pipeline"]
-        B1[Data Preprocessing]
-        B2[Numerical Scaling]
-        B3[Categorical Encoding]
-        B4[Train / Test Split]
-        B5[Regression Model Training]
-        B6[Model Comparison]
-        B7[Ridge Regression Selection]
+    subgraph B["2. Saved ML Artifacts"]
+        B1[preprocessor.pkl]
+        B2[best_model.pkl]
 
-        B1 --> B2
-        B1 --> B3
-        B2 --> B4
-        B3 --> B4
-        B4 --> B5 --> B6 --> B7
+        A6 --> B1
+        A6 --> B2
     end
 
-    subgraph C["3. Model Deployment"]
-        C1[Store Trained Model]
-        C2[Store Preprocessing Pipeline]
-        C3[Streamlit Dashboard]
+    subgraph C["3. FastAPI Backend"]
+        C1[Data Services]
+        C2[Feature Builder]
+        C3[Inference Service]
+        C4[Explanation Service]
+        C5[REST API Routes]
 
-        C1 --> C3
+        B1 --> C3
+        B2 --> C3
+        C1 --> C5
         C2 --> C3
+        C3 --> C5
+        C4 --> C5
     end
 
-    subgraph D["4. Decision Support"]
-        D1[Opportunity Ranking]
-        D2[Score Prediction]
-        D3[Prediction Explainability]
-        D4[Investment Score]
-        D5[Invest / Review / Reject]
+    subgraph D["4. Next.js Frontend"]
+        D1[Overview]
+        D2[Universe]
+        D3[Opportunity Detail]
+        D4[New Analysis]
+        D5[Methodology]
 
-        D1 --> D4
-        D2 --> D4
-        D3 --> D4
-        D4 --> D5
+        C5 --> D1
+        C5 --> D2
+        C5 --> D3
+        C5 --> D4
+        C5 --> D5
     end
 
-    A3 --> B1
-    B7 --> C1
-    B7 --> C2
-    C3 --> D1
-    C3 --> D2
-    C3 --> D3
+    subgraph E["5. Production Deployment"]
+        E1[Render - FastAPI]
+        E2[Vercel - Next.js]
+
+        C5 --> E1
+        D1 --> E2
+        D2 --> E2
+        D3 --> E2
+        D4 --> E2
+        D5 --> E2
+    end
 ```
 
 ---
@@ -269,7 +320,7 @@ Categorical features are encoded using:
 OneHotEncoder
 ```
 
-The transformations are stored in a fitted preprocessing pipeline and reused during inference.
+The fitted preprocessing pipeline is stored and reused during inference.
 
 ### 5. Model training
 
@@ -291,11 +342,11 @@ The models are evaluated using:
 - Root Mean Squared Error
 - R² score
 
-The model with the lowest Mean Absolute Error is selected.
+The model with the lowest recorded Mean Absolute Error is selected.
 
 ### 7. Prediction
 
-The selected model predicts an Investment Score, which is clipped to remain between 0 and 100.
+The selected model predicts an Investment Score, which is bounded between 0 and 100.
 
 ### 8. Recommendation generation
 
@@ -303,9 +354,16 @@ The predicted score is converted into an Invest, Review, or Reject recommendatio
 
 ### 9. Explainability
 
-For each new prediction, the application calculates feature contributions using the processed feature values and the Ridge Regression coefficients.
+For each new prediction, the application calculates local model contributions using processed feature values and Ridge Regression coefficients.
 
-This allows the dashboard to display which factors increased or decreased the predicted Investment Score.
+The production interface separates:
+
+- Positive model contributions
+- Negative model contributions
+- Contribution direction
+- Signed contribution magnitude
+
+These values describe arithmetic influence within the model and must not be interpreted as causal effects.
 
 ---
 
@@ -319,7 +377,7 @@ The following regression models were evaluated:
 - Gradient Boosting Regressor
 - Extra Trees Regressor
 
-The committed model-comparison results are:
+The recorded model-comparison results are:
 
 | Model | MAE | RMSE | R² |
 |---|---:|---:|---:|
@@ -347,7 +405,7 @@ RMSE = 9.3381
 R²   = 0.8394
 ```
 
-Ridge Regression also supports coefficient-based feature contribution analysis, allowing the application to explain the direction and approximate impact of individual processed features.
+Ridge Regression also supports coefficient-based contribution analysis, allowing the application to describe the direction and arithmetic contribution of processed model features.
 
 ---
 
@@ -378,7 +436,7 @@ These thresholds are project-defined decision rules created for the synthetic po
 
 ## Prediction Explainability
 
-The application explains Ridge Regression predictions using local feature contributions.
+The application explains Ridge Regression predictions using local model contributions.
 
 For each processed feature:
 
@@ -386,18 +444,18 @@ For each processed feature:
 Feature Contribution = Processed Feature Value × Model Coefficient
 ```
 
-Positive contributions increase the predicted Investment Score, while negative contributions reduce it.
+Positive values increase the raw model score relative to the model intercept, while negative values reduce it.
 
-The dashboard displays:
+The production interface displays:
 
-- Top contributing features
-- Positive score drivers
-- Negative score drivers
-- Contribution direction
-- Contribution magnitude
-- A visual feature-contribution chart
+- Positive contribution drivers
+- Negative contribution drivers
+- Signed contribution values
+- Relative contribution bars
 
-This provides a more transparent prediction experience than displaying a score without supporting information.
+The interface intentionally avoids causal language.
+
+> Model contributions indicate arithmetic influence on the predicted score, not causation.
 
 ---
 
@@ -405,18 +463,22 @@ This provides a more transparent prediction experience than displaying a score w
 
 | Category | Technology |
 |---|---|
-| Programming language | Python |
-| User interface | Streamlit |
+| Frontend | Next.js |
+| Frontend language | TypeScript |
+| Backend API | FastAPI |
+| Backend language | Python |
 | Machine learning | Scikit-learn |
 | Selected model | Ridge Regression |
 | Data processing | Pandas |
 | Numerical operations | NumPy |
-| Interactive visualization | Plotly |
-| Analysis visualization | Matplotlib and Seaborn |
 | Preprocessing | StandardScaler and OneHotEncoder |
 | Model persistence | Joblib |
 | Experiments | Jupyter Notebook |
+| Testing | Pytest |
 | Data format | CSV |
+| Frontend deployment | Vercel |
+| Backend deployment | Render |
+| API interface | REST / JSON |
 
 ---
 
@@ -424,18 +486,41 @@ This provides a more transparent prediction experience than displaying a score w
 
 ```text
 ai-investment-opportunity-analyzer/
+├── frontend/
+│   ├── app/
+│   │   ├── analysis/
+│   │   │   └── new/
+│   │   ├── methodology/
+│   │   ├── opportunities/
+│   │   │   └── [id]/
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   │
+│   ├── components/
+│   ├── lib/
+│   │   └── api/
+│   ├── package.json
+│   └── next.config.ts
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── routes/
+│   │   ├── core/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   └── main.py
+│   │
+│   └── requirements.txt
+│
 ├── app/
 │   └── streamlit_app.py
 │
 ├── data/
 │   ├── raw/
 │   │   └── synthetic_investment_opportunities.csv
-│   │
 │   └── processed/
-│       ├── X_test_processed.csv
-│       ├── X_train_processed.csv
-│       ├── y_test.csv
-│       └── y_train.csv
 │
 ├── models/
 │   ├── best_model.pkl
@@ -467,11 +552,22 @@ ai-investment-opportunity-analyzer/
 │   ├── predict.py
 │   └── scoring.py
 │
+├── tests/
+│   ├── test_fastapi_api.py
+│   ├── test_backend_data_service.py
+│   ├── test_backend_explanations.py
+│   ├── test_backend_feature_builder.py
+│   ├── test_backend_inference.py
+│   ├── test_backend_scoring.py
+│   └── additional parity and regression tests
+│
 ├── .gitignore
 ├── deployment_notes.md
 ├── requirements.txt
 └── README.md
 ```
+
+The original Streamlit application is retained in the repository as part of the project's development history. The production application uses the Next.js and FastAPI architecture.
 
 ---
 
@@ -484,7 +580,7 @@ git clone https://github.com/Azoqoz/ai-investment-opportunity-analyzer.git
 cd ai-investment-opportunity-analyzer
 ```
 
-### 2. Create a virtual environment
+### 2. Create a Python virtual environment
 
 #### Windows
 
@@ -500,31 +596,156 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install the dependencies
+### 3. Install backend dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
-No external API key or paid service is required to run the application.
+### 4. Install frontend dependencies
+
+```bash
+cd frontend
+npm install
+```
+
+No external paid API or model provider is required.
 
 ---
 
 ## Running the Application
 
-Start the Streamlit dashboard with:
+The production architecture uses two local services.
+
+### 1. Start FastAPI
+
+From the repository root:
 
 ```bash
-streamlit run app/streamlit_app.py
+python -m uvicorn backend.app.main:app --reload
 ```
 
-Streamlit will display a local URL in the terminal, typically:
+The API will normally be available at:
 
 ```text
-http://localhost:8501
+http://127.0.0.1:8000
 ```
 
-Open the displayed URL in your browser.
+Interactive API documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### 2. Start Next.js
+
+Open another terminal:
+
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will normally be available at:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## API Endpoints
+
+The FastAPI backend provides the application with live model and dataset functionality.
+
+Primary routes include:
+
+```text
+GET  /health
+GET  /overview
+GET  /opportunities
+GET  /opportunities/{opportunity_id}
+POST /predict
+GET  /docs
+```
+
+### Health
+
+Checks whether the application has successfully loaded:
+
+- Dataset
+- Model
+- Preprocessor
+
+### Overview
+
+Returns:
+
+- Portfolio-level metrics
+- Recommendation distribution
+- Investment-score histogram
+- Sector rankings
+- Region rankings
+
+### Opportunities
+
+Supports:
+
+- Search
+- Filtering
+- Ranking
+- Pagination
+
+### Opportunity Detail
+
+Returns the complete stored record for a selected opportunity.
+
+### Predict
+
+Accepts the simplified opportunity profile, builds the full model feature frame, applies preprocessing, generates the Investment Score and recommendation, and returns model contributions.
+
+---
+
+## Validation
+
+The migration and backend behavior are protected by automated tests covering areas such as:
+
+- Dataset baseline integrity
+- Recommendation thresholds
+- Filtering and ranking
+- Search behavior
+- Pagination
+- Simplified feature construction
+- Raw feature order
+- Model and preprocessor loading
+- Golden prediction cases
+- Prediction repeatability
+- FastAPI endpoints
+- API validation
+- Explanation behavior
+- Claim-safety terminology
+
+The final backend test suite completed with:
+
+```text
+111 passed
+0 failed
+```
+
+The production frontend also passed:
+
+```text
+npm run lint
+npm run build
+```
+
+The final deployed application was manually verified across:
+
+- Overview
+- Universe
+- Opportunity Detail
+- New Analysis
+- Methodology
 
 ---
 
@@ -566,19 +787,57 @@ models/preprocessor.pkl
 
 ## Deployment
 
-The application can be deployed using Streamlit Community Cloud.
+The production application is deployed as two independent services.
 
-Recommended deployment settings:
+### Frontend — Vercel
 
 ```text
-Repository: Azoqoz/ai-investment-opportunity-analyzer
+Platform: Vercel
+Framework: Next.js
+Root Directory: frontend
 Branch: main
-Main file path: app/streamlit_app.py
 ```
 
-The application does not require API keys or Streamlit secrets.
+Frontend environment variable:
 
-The dataset, trained model, preprocessing pipeline, and model-comparison results are loaded directly from the repository.
+```text
+NEXT_PUBLIC_API_BASE_URL=https://ai-investment-opportunity-analyzer.onrender.com
+```
+
+Production URL:
+
+```text
+https://ai-investment-opportunity-analyzer.vercel.app
+```
+
+### Backend — Render
+
+```text
+Platform: Render
+Runtime: Python
+Branch: main
+Root Directory: repository root
+```
+
+Build command:
+
+```bash
+pip install -r backend/requirements.txt
+```
+
+Start command:
+
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Production API:
+
+```text
+https://ai-investment-opportunity-analyzer.onrender.com
+```
+
+The backend uses an `ALLOWED_ORIGINS` environment variable to authorize the production Vercel frontend through CORS.
 
 ---
 
@@ -612,11 +871,12 @@ The dataset, trained model, preprocessing pipeline, and model-comparison results
 - The model has not been validated using real investment outcomes
 - Recommendation thresholds are manually defined project rules
 - The model may reproduce assumptions embedded in the synthetic data-generation process
-- Simplified dashboard inputs generate additional model features using predefined mappings, formulas, medians, and modes
-- Coefficient-based explanations describe the Ridge Regression model but do not establish causation
-- The dashboard does not include real-time financial or market data
+- Simplified public inputs generate additional model features using predefined mappings and formulas
+- Coefficient-based model contributions do not establish causation
+- The application does not include real-time financial or market data
 - The application does not include authentication or saved user sessions
 - The current model results do not demonstrate performance on a real production distribution
+- The Render free backend may spin down after inactivity, which can increase the latency of the first request
 - The system should not replace financial analysis, due diligence, or expert judgment
 
 ---
@@ -626,25 +886,26 @@ The dataset, trained model, preprocessing pipeline, and model-comparison results
 - Train and validate the system using a governed real-world dataset
 - Add cross-validation and systematic hyperparameter tuning
 - Add SHAP-based global and local explanations
-- Add model and dataset versioning
+- Add formal model and dataset versioning
 - Add experiment tracking
-- Add automated unit and integration tests
-- Add data-validation checks
+- Add stricter production data-validation checks
 - Add model-drift and data-drift monitoring
 - Add scenario comparison between multiple opportunities
 - Add downloadable analysis reports
-- Add a REST API for external integrations
-- Add user authentication and saved analysis sessions
+- Add user authentication
+- Add saved analysis sessions
 - Add Docker support
-- Add continuous integration and automated deployment
+- Add a formal CI pipeline for automated test execution
 - Add external market-data integrations
+- Add persistent application storage
 - Add human approval and governance workflows
+- Add production observability and model-monitoring capabilities
 
 ---
 
 ## Why This Project Matters
 
-This project demonstrates a complete applied machine learning workflow rather than only presenting a trained notebook model.
+This project demonstrates a complete applied machine learning and AI engineering workflow rather than only presenting a trained notebook model.
 
 It covers practical skills including:
 
@@ -659,15 +920,26 @@ It covers practical skills including:
 - Model persistence
 - Explainable machine learning
 - Decision-rule implementation
-- Interactive analytics
-- Streamlit dashboard development
-- Cloud deployment preparation
-- User-focused presentation of technical outputs
+- Framework-neutral backend services
+- REST API development with FastAPI
+- Typed frontend integration
+- Next.js application development
+- Search, filtering, ranking, and pagination
+- Automated parity and regression testing
+- API validation and error handling
+- Production frontend/backend separation
+- CORS configuration
+- Vercel deployment
+- Render deployment
+- User-focused presentation of technical model outputs
 
-The project shows how a machine learning model can be transformed into a usable decision-support application while clearly communicating its assumptions and limitations.
+The project shows how a machine learning model can be transformed into a tested, deployed, full-stack decision-support system while clearly communicating its assumptions, limitations, and interpretation boundaries.
 
 ---
 
 ## Author
 
 Developed by [Azoqoz](https://github.com/Azoqoz).
+
+**Live Application:**  
+https://ai-investment-opportunity-analyzer.vercel.app
