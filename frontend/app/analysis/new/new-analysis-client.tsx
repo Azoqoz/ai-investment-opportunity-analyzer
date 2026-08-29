@@ -99,8 +99,6 @@ export function NewAnalysisClient() {
     ...negativeRows.map((item) => Math.abs(item.contribution)),
   );
 
-  const positiveContributions = prediction?.positive_contributions ?? [];
-  const negativeContributions = prediction?.negative_contributions ?? [];
   const recommendationTone = prediction?.recommendation.toLowerCase() ?? "review";
 
   function updateValue<Key extends keyof FormValues>(key: Key, value: FormValues[Key]) {
@@ -372,43 +370,33 @@ export function NewAnalysisClient() {
           </dl>
           <div className="contribution-block">
             <span>Positive Model Contributions</span>
-            {(positiveContributions.length > 0 ? positiveContributions : ["Awaiting live response"]).map(
-              (description, index) => {
-                const contribution = positiveRows[index]?.contribution;
-                const width = contribution === undefined
-                  ? "0%"
-                  : `${(Math.abs(contribution) / largestContribution) * 100}%`;
-
-                return (
-                  <div key={description}>
-                    <i className="contribution-positive" style={{ width }} />
-                    <b title={description}>{description}</b>
-                    <code>{formatContribution(contribution)}</code>
-                  </div>
-                );
-              },
-            )}
+            {positiveRows.length > 0 ? positiveRows.map((item) => (
+              <div key={item.feature}>
+                <b title={item.readable_feature}>{item.readable_feature}</b>
+                <i
+                  className="contribution-positive"
+                  style={{ width: `${(Math.abs(item.contribution) / largestContribution) * 100}%` }}
+                />
+                <code>{formatContribution(item.contribution)}</code>
+              </div>
+            )) : <p className="contribution-empty">Awaiting live response</p>}
           </div>
           <div className="contribution-block">
             <span>Negative Model Contributions</span>
-            {(negativeContributions.length > 0 ? negativeContributions : ["Awaiting live response"]).map(
-              (description, index) => {
-                const contribution = negativeRows[index]?.contribution;
-                const width = contribution === undefined
-                  ? "0%"
-                  : `${(Math.abs(contribution) / largestContribution) * 100}%`;
-
-                return (
-                  <div key={description}>
-                    <i className="contribution-negative" style={{ width }} />
-                    <b title={description}>{description}</b>
-                    <code>{formatContribution(contribution)}</code>
-                  </div>
-                );
-              },
-            )}
+            {negativeRows.length > 0 ? negativeRows.map((item) => (
+              <div key={item.feature}>
+                <b title={item.readable_feature}>{item.readable_feature}</b>
+                <i
+                  className="contribution-negative"
+                  style={{ width: `${(Math.abs(item.contribution) / largestContribution) * 100}%` }}
+                />
+                <code>{formatContribution(item.contribution)}</code>
+              </div>
+            )) : <p className="contribution-empty">Awaiting live response</p>}
           </div>
-          <p className="rail-note">{requestNote(requestState, errorMessage)}</p>
+          <p className="rail-note">
+            Model contributions indicate arithmetic influence on the predicted score, not causation.
+          </p>
         </aside>
       </div>
     </div>
