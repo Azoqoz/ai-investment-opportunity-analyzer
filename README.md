@@ -1096,5 +1096,3 @@ The project shows how a machine learning model can be transformed into a tested,
 
 Developed by [Azoqoz](https://github.com/Azoqoz).
 
-**Live Application:**  
-https://ai-investment-opportunity-analyzer.vercel.app
